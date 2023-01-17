@@ -1,0 +1,15 @@
+{
+  "name": "fitmap",
+  "version": "1.0.0",
+  "description": "",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Marcin Suski",
+  "license": "",
+  "dependencies": {
+    "leaflet": "^1.9.3"
+  }
+}
