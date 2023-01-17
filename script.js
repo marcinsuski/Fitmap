@@ -6,32 +6,148 @@ const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 
 const form = document.querySelector('.form');
 const containerWorkouts = document.querySelector('.workouts');
 const inputType = document.querySelector('.form__input--type');
+const inputDate = document.querySelector('.form__input--date');
 const inputDistance = document.querySelector('.form__input--distance');
 const inputDuration = document.querySelector('.form__input--duration');
-const inputCadence = document.querySelector('.form__input--cadence');
+const inputPace = document.querySelector('.form__input--pace');
+const inputHeartRate = document.querySelector('.form__input--hr');
+const inputSpeed = document.querySelector('.form__input--speed');
 const inputElevation = document.querySelector('.form__input--elevation');
 
 // Get the navigation from user
 
-const geoSuccess = position => {
-  const { latitude } = position.coords;
-  const { longitude } = position.coords;
-  console.log(`https://www.google.pl/maps/@${latitude},${longitude}`);
+class App {
+  #map;
+  #mapEvent;
 
-  const coords = [latitude, longitude];
+  constructor() {
+    this._getPosition();
+    form.addEventListener('submit', this._newWorkout.bind(this));
+    inputType.addEventListener('change', this._toggleActivityTypeField);
+  }
 
-  const map = L.map('map').setView(coords, 13); // 13 - zoom level
+  _getPosition() {
+    if (navigator.geolocation)
+      navigator.geolocation.getCurrentPosition(
+        this._loadMap.bind(this),
+        function () {
+          alert('Could not get your position');
+        }
+      );
+  }
 
-  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution:
-      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-  }).addTo(map);
+  _loadMap(position) {
+    const { latitude } = position.coords;
+    const { longitude } = position.coords;
+    console.log(`https://www.google.pl/maps/@${latitude},${longitude}`);
 
-  map.on('click', function (mapEvent) {
-    console.log(mapEvent);
-    const { lat, lng } = mapEvent.latlng;
+    const coords = [latitude, longitude];
+
+    this.#map = L.map('map').setView(coords, 13); // 13 - zoom level
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    }).addTo(this.#map);
+
+    //Handling clicks on map.
+    this.#map.on('click', this._showForm.bind(this));
+  }
+
+  _showForm(mapE) {
+    this.#mapEvent = mapE;
+    form.classList.remove('hidden');
+    inputDate.focus();
+  }
+
+  _toggleActivityTypeField(e) {
+    let activity = e.target.value;
+    switch (activity) {
+      case 'running':
+        inputPace.closest('.form__row').classList.remove('form__row--hidden');
+        inputSpeed.closest('.form__row').classList.add('form__row--hidden');
+        inputElevation
+          .closest('.form__row')
+          .classList.add('form__row--hidden');
+        inputDistance
+          .closest('.form__row')
+          .classList.remove('form__row--hidden');
+        break;
+      case 'trailrunning':
+        inputSpeed.closest('.form__row').classList.add('form__row--hidden');
+        inputElevation
+          .closest('.form__row')
+          .classList.remove('form__row--hidden');
+        inputDistance
+          .closest('.form__row')
+          .classList.remove('form__row--hidden');
+        break;
+      case 'cycling':
+        inputSpeed
+          .closest('.form__row')
+          .classList.remove('form__row--hidden');
+        inputPace.closest('.form__row').classList.add('form__row--hidden');
+        inputElevation
+          .closest('.form__row')
+          .classList.remove('form__row--hidden');
+        inputDistance
+          .closest('.form__row')
+          .classList.remove('form__row--hidden');
+        break;
+      case 'swimming':
+        inputSpeed
+          .closest('.form__row')
+          .classList.remove('form__row--hidden');
+        inputPace.closest('.form__row').classList.add('form__row--hidden');
+        inputElevation
+          .closest('.form__row')
+          .classList.add('form__row--hidden');
+        inputDistance
+          .closest('.form__row')
+          .classList.remove('form__row--hidden');
+        break;
+      case 'walking':
+        inputSpeed.closest('.form__row').classList.add('form__row--hidden');
+        inputPace.closest('.form__row').classList.remove('form__row--hidden');
+        inputElevation
+          .closest('.form__row')
+          .classList.add('form__row--hidden');
+        inputDistance
+          .closest('.form__row')
+          .classList.remove('form__row--hidden');
+        break;
+      case 'joga':
+        inputSpeed.closest('.form__row').classList.add('form__row--hidden');
+        inputPace.closest('.form__row').classList.add('form__row--hidden');
+        inputElevation
+          .closest('.form__row')
+          .classList.add('form__row--hidden');
+        inputDistance
+          .closest('.form__row')
+          .classList.add('form__row--hidden');
+        break;
+    }
+  }
+
+
+  _newWorkout(e) {
+    e.preventDefault();
+
+    //Clear input fields
+    inputDate.value =
+      inputDistance.value =
+      inputDuration.value =
+      inputPace.value =
+      inputSpeed.value =
+      inputHeartRate.value =
+      inputElevation.value =
+        '';
+
+    //Display marker on the map
+    const { lat, lng } = this.#mapEvent.latlng;
+
     L.marker([lat, lng])
-      .addTo(map)
+      .addTo(this.#map)
       .bindPopup(
         L.popup({
           maxWidth: 250,
@@ -40,13 +156,10 @@ const geoSuccess = position => {
           closeOnClick: false,
           className: 'running-popup',
         })
-      ).setPopupContent('Workout')
+      )
+      .setPopupContent('Workout')
       .openPopup();
-  });
-};
+  }
+}
 
-const geoError = () => {
-  alert('Could not get your position');
-};
-
-navigator.geolocation.getCurrentPosition(geoSuccess, geoError);
+const app = new App();

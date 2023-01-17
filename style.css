@@ -13,7 +13,7 @@
   --color-dark--2: #42484d;
   --color-light--1: rgb(216, 216, 216);
   --color-light--2: #ececec;
-  --color-light--3: rgb(214, 222, 224);
+  --color-light--3: rgb(211, 211, 211);
 }
 
 * {
@@ -49,9 +49,9 @@ a:visited {
 
 /* SIDEBAR */
 .sidebar {
-  flex-basis: 30%;
+  flex-basis: 35%;
   background-color: var(--color-dark--1);
-  padding: 3rem 5rem 4rem 5rem;
+  padding: 3rem 3rem 2rem 3rem;
   display: flex;
   flex-direction: column;
   border-radius: 10px 0 0 10px;
@@ -145,7 +145,7 @@ a:visited {
   gap: 0.5rem 2.5rem;
 
   /* Match height and activity boxes */
-  height: 9.25rem;
+  height: fit-content;
   transition: all 0.5s, transform 1ms;
 }
 
@@ -168,7 +168,7 @@ a:visited {
 
 .form__label {
   flex: 0 0 50%;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   font-weight: 600;
 }
 

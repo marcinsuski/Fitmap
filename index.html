@@ -27,16 +27,21 @@
       <ul class="workouts">
         <form class="form hidden">
           <div class="form__row">
+            <label class="form__label">Date</label>
+            <input class="form__input form__input--date" placeholder="date" />
+          </div>
+          <div class="form__row">
             <label class="form__label">Type</label>
             <select class="form__input form__input--type">
               <option value="running">Running</option>
-              <option value="cycling">Trailrunning</option>
+              <option value="trailrunning">Trailrunning</option>
               <option value="cycling">Cycling</option>
-              <option value="cycling">Swimming</option>
-              <option value="cycling">Walking</option>
-              <option value="cycling">Joga</option>
+              <option value="swimming">Swimming</option>
+              <option value="walking">Walking</option>
+              <option value="joga">Joga</option>
             </select>
           </div>
+       
           <div class="form__row">
             <label class="form__label">Distance</label>
             <input class="form__input form__input--distance" placeholder="km" />
@@ -49,10 +54,24 @@
             />
           </div>
           <div class="form__row">
-            <label class="form__label">Cadence</label>
+            <label class="form__label">Heartrate</label>
             <input
-              class="form__input form__input--cadence"
-              placeholder="step/min"
+              class="form__input form__input--hr"
+              placeholder="bpm"
+            />
+          </div>
+          <div class="form__row">
+            <label class="form__label">Pace</label>
+            <input
+              class="form__input form__input--pace"
+              placeholder="min/km"
+            />
+          </div>
+          <div class="form__row form__row--hidden">
+            <label class="form__label">Speed</label>
+            <input
+              class="form__input form__input--speed"
+              placeholder="km/h"
             />
           </div>
           <div class="form__row form__row--hidden">
@@ -62,6 +81,7 @@
               placeholder="meters"
             />
           </div>
+        
           <button class="form__btn">OK</button>
         </form>
 
