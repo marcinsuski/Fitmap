@@ -593,3 +593,15 @@ function minTommss(minutes) {
   var sec = Math.floor((Math.abs(minutes) * 60) % 60);
   return sign + (min < 10 ? '0' : '') + min + ':' + (sec < 10 ? '0' : '') + sec;
 }
+
+
+
+// TODO
+
+// EDIT WORKOUT
+// DELETE WORKOUT
+// DELETE ALL WORKOUTS 
+// SORT WORKOUTS - AT LEAST BY DATE
+// ERROR MESSAGES
+
+// DISPLAY WEATHER DATA FOR WORKOUT TIME AND PLACE
