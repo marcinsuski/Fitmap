@@ -22,13 +22,15 @@ Credits to Jonas Schmedtman who introduced the basics of this on his JS course.
 ## ⚙ TODO
 App is still in progress although it is already working to some extent. Changes I wish to make:
 - add "description" input to allow more elaborate title for a workout (like a summary of what was performed on a given training session).
+- add editing and deleting individual workouts
+- sort workouts at least by date
+- handle better error messages
 - rewrite everything to React and Typescript
 - add backend database
 - link the app with a calendar component
 - In the calendar compontent one might add training plans and then add final activities that should be visible both in a calendar and on a map.
 - Workout data should be collected into statistics displayed on yet another component - in a form of charts.
-
- 
+- optional: display weather data for workout time and place 
 ## 💻 Demo
 
 Click the link and check the demo app: [Fitmapp-link](https://fitmapp.netlify.app/)
