@@ -12,7 +12,6 @@ const inputElevation = document.querySelector('.form__input--elevation');
 class Workout {
   date = new Date(inputDate.valueAsNumber);
   id = Date.now() + ''; // TODO: add UUID4 for more users
-  clicks = 0;
 
   constructor(time, coords, distance, duration, heartrate) {
     this.time = time;
@@ -27,20 +26,13 @@ class Workout {
     const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
     this.description = `${this.type[0].toUpperCase()}${this.type.slice(1)} on 
-     ${months[this.date.getMonth()]} ${this.date.getDate()
-  }`;
-    console.log(this.date)
-    
-  }
-
-  click() {
-    this.clicks++
+     ${months[this.date.getMonth()]} ${this.date.getDate()}`;
   }
 }
 
 class Running extends Workout {
   type = 'running';
-  
+
   constructor(time, coords, distance, duration, heartrate, pace) {
     super(time, coords, distance, duration, heartrate);
     this.pace = pace;
@@ -49,7 +41,13 @@ class Running extends Workout {
   }
 
   calcPace() {
-    this.pace = this.duration / this.distance;
+    let minutes = this.duration / this.distance;
+    let sign = minutes < 0 ? '-' : '';
+    let min = Math.floor(Math.abs(minutes));
+    let sec = Math.floor((Math.abs(minutes) * 60) % 60);
+    let result = sign + (min < 10 ? '0' : '') + min + ':' + (sec < 10 ? '0' : '') + sec;
+    this.pace = result;
+
     return this.pace;
   }
 }
@@ -140,8 +138,6 @@ class Yoga extends Workout {
   }
 }
 
-
-
 ///////////////////////////////////////////////////
 // APP ARCHITECTURE
 
@@ -152,10 +148,15 @@ class App {
   #workouts = [];
 
   constructor() {
+    // Get User Position
     this._getPosition();
+
+    //Get data from localstorage
+    this._getLocalstorage();
+
     form.addEventListener('submit', this._newWorkout.bind(this));
     inputType.addEventListener('change', this._toggleActivityTypeField);
-    containerWorkouts.addEventListener('click', this._moveToPopup.bind(this))
+    containerWorkouts.addEventListener('click', this._moveToPopup.bind(this));
   }
 
   _getPosition() {
@@ -172,7 +173,6 @@ class App {
     const { latitude } = position.coords;
     const { longitude } = position.coords;
 
-
     const coords = [latitude, longitude];
 
     this.#map = L.map('map').setView(coords, this.#mapZoomLevel); // 13 - zoom level
@@ -184,6 +184,8 @@ class App {
 
     //Handling clicks on map.
     this.#map.on('click', this._showForm.bind(this));
+
+    this.#workouts.forEach(workout => this._renderWorkoutMarker(workout));
   }
 
   _showForm(mapE) {
@@ -195,17 +197,15 @@ class App {
   _hideForm() {
     //EMpty inputs
     inputDate.value =
-    inputDistance.value =
-    inputDuration.value =
-    inputHeartRate.value =
-    inputElevation.value =
-    '';
+      inputDistance.value =
+      inputDuration.value =
+      inputHeartRate.value =
+      inputElevation.value =
+        '';
     form.style.display = 'none';
     form.classList.add('hidden');
-    setTimeout(() => form.style.display = 'grid', 1000)
-
+    setTimeout(() => (form.style.display = 'grid'), 1000);
   }
-  
 
   _toggleActivityTypeField(e) {
     let activity = e.target.value;
@@ -271,7 +271,6 @@ class App {
 
     // if running
     if (type === 'running') {
- 
       if (
         !validInputs(distance, duration, heartrate) ||
         !allPositive(distance, duration, heartrate)
@@ -312,7 +311,7 @@ class App {
     // if cycling
     if (type === 'cycling') {
       const elevation = +inputElevation.value;
-    
+
       if (
         !validInputs(distance, duration, heartrate, elevation) ||
         !allPositive(distance, duration, heartrate)
@@ -332,7 +331,6 @@ class App {
 
     // if swimming
     if (type === 'swimming') {
-     
       if (
         !validInputs(distance, duration, heartrate) ||
         !allPositive(distance, duration, heartrate)
@@ -350,7 +348,6 @@ class App {
     }
     // if walking
     if (type === 'walking') {
-
       if (
         !validInputs(distance, duration, heartrate) ||
         !allPositive(distance, duration, heartrate)
@@ -369,7 +366,6 @@ class App {
 
     // if yoga
     if (type === 'yoga') {
- 
       if (
         !validInputs(duration, heartrate) ||
         !allPositive(duration, heartrate)
@@ -379,11 +375,8 @@ class App {
       workout = new Yoga(formattedDate, [lat, lng], duration, heartrate);
     }
 
-
-
     // Add new object ot workout array
     this.#workouts.push(workout);
-    console.log(workout);
 
     //Display marker on the list
     this._renderWorkout(workout);
@@ -392,8 +385,10 @@ class App {
     this._renderWorkoutMarker(workout);
 
     //Clear input fields
-
     this._hideForm();
+
+    // Set local storage to all workouts
+    this._setLocalStorage();
   }
 
   _renderWorkoutMarker(workout) {
@@ -408,21 +403,23 @@ class App {
           className: `${workout.type}-popup`,
         })
       )
-      .setPopupContent(`${
-        (workout.type === 'running') | 'trailrunning'
-          ? '🏃‍♂️'
-          : workout.type === 'cycling'
-          ? '🚴‍♀️'
-          : workout.type === 'swimming'
-          ? '🏊‍♀️'
-          : workout.type === 'walking'
-          ? '🚶‍♂️'
-          : workout.type === 'yoga' ? '🧘‍♀️' : ''
-      } ${workout.description}`)
+      .setPopupContent(
+        `${
+          (workout.type === 'running') | 'trailrunning'
+            ? '🏃‍♂️'
+            : workout.type === 'cycling'
+            ? '🚴‍♀️'
+            : workout.type === 'swimming'
+            ? '🏊‍♀️'
+            : workout.type === 'walking'
+            ? '🚶‍♂️'
+            : workout.type === 'yoga'
+            ? '🧘‍♀️'
+            : ''
+        } ${workout.description}`
+      )
       .openPopup();
   }
-
-
 
   _renderWorkout(workout) {
     let html = `
@@ -438,7 +435,9 @@ class App {
                 ? '🏊‍♀️'
                 : workout.type === 'walking'
                 ? '🚶‍♂️'
-                : workout.type === 'yoga' ? '🧘‍♀️' : ''
+                : workout.type === 'yoga'
+                ? '🧘‍♀️'
+                : ''
             }</span>
             <span class="workout__value">${workout.distance}</span>
             <span class="workout__unit">km</span>
@@ -454,7 +453,7 @@ class App {
       html += `
             <div class="workout__details">
               <span class="workout__icon">⚡️</span>
-              <span class="workout__value">${workout.pace.toFixed(2)}</span>
+              <span class="workout__value">${workout.pace}</span>
               <span class="workout__unit">min/km</span>
             </div>
             <div class="workout__details">
@@ -469,7 +468,9 @@ class App {
       html += `
                 <div class="workout__details">
                   <span class="workout__icon">⚡️</span>
-                  <span class="workout__value">${workout.speed.toFixed(1)}</span>
+                  <span class="workout__value">${workout.speed.toFixed(
+                    1
+                  )}</span>
                   <span class="workout__unit">km/h</span>
                 </div>
                 <div class="workout__details">
@@ -486,7 +487,7 @@ class App {
               `;
 
     if (workout.type === 'trailrunning')
-    html += `
+      html += `
               <div class="workout__details">
                 <span class="workout__icon">⚡️</span>
                 <span class="workout__value">${workout.pace.toFixed(2)}</span>
@@ -503,10 +504,10 @@ class App {
                 <span class="workout__unit">m</span>
              </div>
             </li>
-            `;       
+            `;
 
     if (workout.type === 'swimming')
-    html += `
+      html += `
               <div class="workout__details">
                 <span class="workout__icon">⚡️</span>
                 <span class="workout__value">${workout.speed.toFixed(1)}</span>
@@ -518,10 +519,10 @@ class App {
                 <span class="workout__unit">bpm</span>
               </div>
             </li>
-            `;    
+            `;
 
-   if (workout.type === 'walking')
-   html += `
+    if (workout.type === 'walking')
+      html += `
              <div class="workout__details">
                <span class="workout__icon">⚡️</span>
                <span class="workout__value">${workout.pace.toFixed(2)}</span>
@@ -533,38 +534,62 @@ class App {
                 <span class="workout__unit">bpm</span>
               </div>
             </li>
-            `;                    
+            `;
 
-   if (workout.type === 'yoga')
-   html += `
+    if (workout.type === 'yoga')
+      html += `
              <div class="workout__details">
                <span class="workout__icon">🧡</span>
                <span class="workout__value">${workout.heartrate}</span>
                 <span class="workout__unit">bpm</span>
               </div>
             </li>
-            `;   
+            `;
 
-
-  form.insertAdjacentHTML('afterend', html);
+    form.insertAdjacentHTML('afterend', html);
   }
 
   _moveToPopup(e) {
     const workoutEl = e.target.closest('.workout');
-    if(!workoutEl) return;
-    const workout = this.#workouts.find(work => work.id === workoutEl.dataset.id)
+    if (!workoutEl) return;
+    const workout = this.#workouts.find(
+      work => work.id === workoutEl.dataset.id
+    );
     this.#map.setView(workout.coords, this.#mapZoomLevel, {
       animate: true,
       pan: {
-        duration: 1
-      }
-    })
-
+        duration: 1,
+      },
+    });
 
     //using the public interface
-    workout.click();
-  };
-  
+  }
+
+  _setLocalStorage() {
+    localStorage.setItem('workouts', JSON.stringify(this.#workouts));
+  }
+
+  _getLocalstorage() {
+    const data = JSON.parse(localStorage.getItem('workouts'));
+
+    if (!data) return;
+
+    this.#workouts = data;
+    this.#workouts.forEach(workout => this._renderWorkout(workout));
+  }
+
+  //not used currently
+  reset() {
+    localStorage.removeItem('workouts');
+    location.reload();
+  }
 }
 
 const app = new App();
+
+function minTommss(minutes) {
+  var sign = minutes < 0 ? '-' : '';
+  var min = Math.floor(Math.abs(minutes));
+  var sec = Math.floor((Math.abs(minutes) * 60) % 60);
+  return sign + (min < 10 ? '0' : '') + min + ':' + (sec < 10 ? '0' : '') + sec;
+}
