@@ -28,7 +28,8 @@
         <form class="form hidden">
           <div class="form__row">
             <label class="form__label">Date</label>
-            <input class="form__input form__input--date" placeholder="date" />
+            <input type="date" id="date" name="wokrout-date"  value=""
+            min="2018-01-01" max="" class="form__input form__input--date" placeholder="dd/mm/yy" />
           </div>
           <div class="form__row">
             <label class="form__label">Type</label>
@@ -38,7 +39,7 @@
               <option value="cycling">Cycling</option>
               <option value="swimming">Swimming</option>
               <option value="walking">Walking</option>
-              <option value="joga">Joga</option>
+              <option value="yoga">Yoga</option>
             </select>
           </div>
        
@@ -58,20 +59,6 @@
             <input
               class="form__input form__input--hr"
               placeholder="bpm"
-            />
-          </div>
-          <div class="form__row">
-            <label class="form__label">Pace</label>
-            <input
-              class="form__input form__input--pace"
-              placeholder="min/km"
-            />
-          </div>
-          <div class="form__row form__row--hidden">
-            <label class="form__label">Speed</label>
-            <input
-              class="form__input form__input--speed"
-              placeholder="km/h"
             />
           </div>
           <div class="form__row form__row--hidden">
@@ -103,13 +90,18 @@
             <span class="workout__unit">min/km</span>
           </div>
           <div class="workout__details">
-            <span class="workout__icon">🦶🏼</span>
-            <span class="workout__value">178</span>
-            <span class="workout__unit">spm</span>
+            <span class="workout__icon">🧡</span>
+            <span class="workout__value">140</span>
+            <span class="workout__unit">bpm</span>
           </div>
-        </li>
+          <div class="workout__details">
+            <span class="workout__icon">⛰</span>
+            <span class="workout__value">223</span>
+            <span class="workout__unit">m</span>
+          </div>
+        </li> -->
 
-        <li class="workout workout--trailrunning" data-id="1234567891">
+        <!-- <li class="workout workout--trailrunning" data-id="1234567891">
           <h2 class="workout__title">Trailruning on April 5</h2>
           <div class="workout__details">
             <span class="workout__icon">🦶🏼</span>
